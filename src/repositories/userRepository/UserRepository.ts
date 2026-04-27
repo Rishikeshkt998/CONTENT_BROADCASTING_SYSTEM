@@ -28,4 +28,25 @@ export default class UserRepository implements IUserRepository {
       throw new Error("[USER_REPOSITORY_FIND_BY_EMAIL_ERROR] " + error);
     }
   }
+
+  async create(
+    gqlMutation: string,
+    variables: any,
+    token: string
+  ): Promise<User> {
+    try {
+      const client = apolloClient(token);
+      const result = await client.mutate({
+        mutation: gql`
+          ${gqlMutation}
+        `,
+        variables,
+      });
+      if (!result) throw new Error("Failed to create user in graphql");
+      return result.data?.result?.user as User;
+    } catch (error) {
+      logger.error("[USER_REPOSITORY_CREATE_ERROR] " + error);
+      throw new Error("[USER_REPOSITORY_CREATE_ERROR] " + error);
+    }
+  }
 }

@@ -7,7 +7,7 @@ export interface CreateContentVariablesDto {
   fileUrl: string;
   fileType: string;
   fileSize: number;
-  uploadedBy: number;
+  uploadedBy: string;
   status: ContentStatus;
   startTime?: string | null;
   endTime?: string | null;

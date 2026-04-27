@@ -3,16 +3,22 @@ import { AuthRequest } from "../infrastructure/middleware/auth";
 import { ContentUseCase } from "../useCases/contentUseCase/ContentUseCase";
 import { ApiError } from "../domain/errors/ApiError";
 import { ContentStatus } from "../domain/enums/ContentStatus";
+import { S3Service } from "../infrastructure/services/s3/S3Service";
+import fs from "fs";
+import path from "path";
 
 type ContentControllerConstructorParams = {
   ContentUseCase: ContentUseCase;
+  S3Service: S3Service;
 };
 
 export default class ContentController {
   private contentUseCase: ContentUseCase;
+  private s3Service: S3Service;
 
-  constructor({ ContentUseCase }: ContentControllerConstructorParams) {
+  constructor({ ContentUseCase, S3Service }: ContentControllerConstructorParams) {
     this.contentUseCase = ContentUseCase;
+    this.s3Service = S3Service;
   }
 
   private getGqlToken(req: Request): string {
@@ -28,16 +34,34 @@ export default class ContentController {
         start_time,
         end_time,
         rotation_duration,
+        file, // Base64 string
       } = req.body;
-      const file = req.file;
 
       if (!file) {
-        res.status(400).json({ error: "File is required" });
+        res.status(400).json({ error: "File (base64) is required" });
         return;
       }
       if (!title || !subject) {
         res.status(400).json({ error: "Title and subject are mandatory" });
         return;
+      }
+
+      // 1. Decode Base64
+      const base64Data = file.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(base64Data, "base64");
+      
+      const fileName = `${Date.now()}-${title.replace(/\s+/g, "_")}.png`;
+      let fileUrl = "";
+
+      // 2. Upload based on storage type
+      if (process.env.STORAGE_TYPE === "s3") {
+        fileUrl = await this.s3Service.uploadFile(buffer, `content/${fileName}`, "image/png");
+      } else {
+        // Local fallback
+        const uploadDir = path.join(process.cwd(), "uploads");
+        if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
+        fs.writeFileSync(path.join(uploadDir, fileName), buffer);
+        fileUrl = `/uploads/${fileName}`;
       }
 
       const gqlToken = this.getGqlToken(req as Request);
@@ -46,10 +70,10 @@ export default class ContentController {
           title,
           description,
           subject,
-          fileUrl: `/uploads/${file.filename}`,
-          fileType: file.mimetype,
-          fileSize: file.size,
-          uploadedBy: req.user?.id as number,
+          fileUrl,
+          fileType: "image/png",
+          fileSize: buffer.length,
+          uploadedBy: req.user?.id as string,
           status: ContentStatus.PENDING,
           startTime: start_time || null,
           endTime: end_time || null,
@@ -75,7 +99,7 @@ export default class ContentController {
       const gqlToken = this.getGqlToken(req as Request);
       const contents = await this.contentUseCase.getContentList(
         req.user?.role as string,
-        req.user?.id as number,
+        req.user?.id as string,
         gqlToken
       );
       res.json({ content: contents });
@@ -95,7 +119,7 @@ export default class ContentController {
       const gqlToken = this.getGqlToken(req as Request);
       const content = await this.contentUseCase.approveContent(
         id,
-        req.user?.id as number,
+        req.user?.id as string,
         gqlToken
       );
       res.json({ message: "Content approved", content });
@@ -141,7 +165,7 @@ export default class ContentController {
       const gqlToken = this.getGqlToken(req);
 
       const contents = await this.contentUseCase.getLiveContent(
-        parseInt(teacherId),
+        teacherId,
         gqlToken,
         subject as string | undefined
       );

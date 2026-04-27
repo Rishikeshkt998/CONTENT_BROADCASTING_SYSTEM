@@ -1,9 +1,8 @@
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  password_hash: string;
-  role: 'principal' | 'teacher' | 'student';
-  created_at: Date;
-  updated_at: Date;
+  passwordHash: string;
+  role: 'principal' | 'teacher';
+  createdAt: string;
 }

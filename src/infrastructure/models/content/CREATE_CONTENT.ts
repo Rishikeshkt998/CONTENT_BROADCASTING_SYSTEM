@@ -5,8 +5,8 @@ export const MUTATION_CREATE_CONTENT = `
     $subject: String!
     $fileUrl: String!
     $fileType: String!
-    $fileSize: BigInt!
-    $uploadedBy: Int!
+    $fileSize: Int!
+    $uploadedBy: UUID!
     $status: Int!
     $startTime: Datetime
     $endTime: Datetime

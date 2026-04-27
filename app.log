@@ -8,3 +8,44 @@
 2026-04-27 06:09:16 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
 2026-04-27 06:21:06 [info] [Server] ⚡️: Server is running on http://localhost:3000
 2026-04-27 06:21:06 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 10:15:14 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 10:15:14 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 10:16:54 [error] [Network error]: TypeError: Failed to parse URL from /graphql
+2026-04-27 10:16:54 [error] [USER_REPOSITORY_FIND_BY_EMAIL_ERROR] ApolloError: Failed to parse URL from /graphql
+2026-04-27 10:18:33 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 10:18:33 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 10:18:38 [error] [GraphQL error]: Message: Cannot query field "updatedAt" on type "User". Did you mean "createdAt"?, Location: [{"line":10,"column":7}], Path: undefined
+2026-04-27 10:18:38 [error] [GraphQL error]: Message: Variable "$id" of type "Int" used in position expecting type "UUID"., Location: [{"line":1,"column":31},{"line":2,"column":69}], Path: undefined
+2026-04-27 10:18:38 [error] [Network error]: ServerError: Response not successful: Received status code 400
+2026-04-27 10:18:38 [error] [USER_REPOSITORY_FIND_BY_EMAIL_ERROR] ApolloError: Response not successful: Received status code 400
+2026-04-27 10:19:59 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 10:20:00 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 10:41:53 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 10:41:53 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 11:49:12 [error] Expected property name or '}' in JSON at position 7 (line 2 column 5)
+2026-04-27 11:49:24 [error] Expected property name or '}' in JSON at position 7 (line 2 column 5)
+2026-04-27 11:50:51 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 11:50:51 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 11:55:39 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 11:55:39 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 12:02:13 [error] [GraphQL error]: Message: Variable "$fileSize" of type "BigInt!" used in position expecting type "Int!"., Location: [{"line":1,"column":121},{"line":3,"column":134}], Path: undefined
+2026-04-27 12:02:13 [error] [GraphQL error]: Message: Variable "$uploadedBy" of type "Int!" used in position expecting type "UUID"., Location: [{"line":1,"column":141},{"line":3,"column":157}], Path: undefined
+2026-04-27 12:02:13 [error] [Network error]: ServerError: Response not successful: Received status code 400
+2026-04-27 12:02:13 [error] [CONTENT_REPOSITORY_CREATE_ERROR] ApolloError: Response not successful: Received status code 400
+2026-04-27 12:03:38 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 12:03:38 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 14:30:40 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 14:30:40 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 14:35:17 [error] [S3Service] Upload failed for content/1777300517058-S3_Test_Image.png: No value provided for input HTTP label: Bucket.
+2026-04-27 14:36:42 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 14:36:42 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 14:37:19 [error] [S3Service] Upload failed for content/1777300637171-S3_Test_Image.png: The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
+2026-04-27 14:38:34 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 14:38:34 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 14:38:41 [info] [S3Service] Successfully uploaded file: content/1777300719905-S3_Test_Image.png
+2026-04-27 16:17:45 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 16:17:45 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 16:19:05 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 16:19:05 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-27 16:19:57 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-27 16:19:57 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql

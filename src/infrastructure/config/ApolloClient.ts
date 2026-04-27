@@ -9,7 +9,7 @@ import { onError } from "@apollo/client/link/error";
 import logger from "../logging/winston/AppLogger";
 
 const httpLink = createHttpLink({
-  uri: process.env.GRAPHQL_URI,
+  uri: process.env.GRAPHQL_URI || "http://localhost:4000/graphql",
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {

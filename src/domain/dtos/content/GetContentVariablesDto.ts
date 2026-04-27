@@ -2,7 +2,7 @@ import { ContentStatus } from "../../enums/ContentStatus";
 
 export interface GetContentVariablesDto {
   id?: string;
-  uploadedBy?: number;
+  uploadedBy?: string;
   status?: ContentStatus;
   subject?: string;
   startTimeLte?: string;

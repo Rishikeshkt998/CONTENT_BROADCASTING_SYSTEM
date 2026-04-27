@@ -47,4 +47,33 @@ export default class AuthController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async register(req: Request, res: Response): Promise<void> {
+    try {
+      const { name, email, password, role } = req.body;
+
+      if (!name || !email || !password || !role) {
+        res.status(400).json({ error: "All fields are required" });
+        return;
+      }
+
+      const gqlToken = this.getGqlToken(req);
+      const user = await this.authUseCase.register(
+        { name, email, password, role },
+        gqlToken
+      );
+
+      res.status(201).json({
+        message: "User registered successfully",
+        user,
+      });
+    } catch (error: any) {
+      if (error instanceof ApiError) {
+        res.status(error.code).json({ error: error.message });
+        return;
+      }
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
 }

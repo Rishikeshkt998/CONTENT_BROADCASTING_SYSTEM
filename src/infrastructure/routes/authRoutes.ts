@@ -7,5 +7,6 @@ const router = Router();
 const authController = container.resolve("AuthController") as AuthController;
 
 router.post("/login", (req, res, next) => authController.login(req, res));
+router.post("/register", (req, res, next) => authController.register(req, res));
 
 export default router;

@@ -1,5 +1,5 @@
 export interface ApproveContentVariablesDto {
   id: string;
-  approvedBy: number;
+  approvedBy: string;
   approvedAt: string;
 }

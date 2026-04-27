@@ -3,4 +3,5 @@ import { IUserRepository } from "../../repositories/userRepository/IUserReposito
 
 export interface IAuthEngine {
   getUserByEmail(email: string, gqlToken: string): Promise<User | null>;
+  registerUser(userData: any, gqlToken: string): Promise<User>;
 }

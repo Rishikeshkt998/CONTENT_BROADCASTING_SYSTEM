@@ -12,7 +12,6 @@ router.post(
   "/",
   authenticate,
   authorize(["teacher"]),
-  upload.single("file"),
   (req, res, next) => contentController.uploadContent(req, res)
 );
 

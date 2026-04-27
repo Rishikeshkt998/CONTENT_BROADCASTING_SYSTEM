@@ -1,7 +1,7 @@
 export const MUTATION_APPROVE_CONTENT = `
   mutation ApproveContent(
     $id: UUID!
-    $approvedBy: Int!
+    $approvedBy: UUID!
     $approvedAt: Datetime!
   ) {
     result: updateContentById(

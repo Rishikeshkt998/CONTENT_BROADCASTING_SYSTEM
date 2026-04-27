@@ -40,7 +40,7 @@ export default class ContentEngine implements IContentEngine {
 
   async approveContent(
     id: string,
-    approvedBy: number,
+    approvedBy: string,
     gqlToken: string
   ): Promise<Content | null> {
     return this.contentRepository.approve(
@@ -75,11 +75,12 @@ export default class ContentEngine implements IContentEngine {
     const nowEpoch = Date.now();
 
     for (const [, items] of subjectMap.entries()) {
-      items.sort((a, b) => a.id - b.id);
+      // Use localeCompare for UUID sorting
+      items.sort((a, b) => a.id.localeCompare(b.id));
 
       let totalDurationMs = 0;
       for (const item of items) {
-        totalDurationMs += (item.rotation_duration || 5) * 60 * 1000;
+        totalDurationMs += (item.rotationDuration || 5) * 60 * 1000;
       }
 
       const cycleTime = nowEpoch % totalDurationMs;
@@ -87,7 +88,7 @@ export default class ContentEngine implements IContentEngine {
       let selectedItem = items[0];
 
       for (const item of items) {
-        const dur = (item.rotation_duration || 5) * 60 * 1000;
+        const dur = (item.rotationDuration || 5) * 60 * 1000;
         if (cycleTime >= accumulator && cycleTime < accumulator + dur) {
           selectedItem = item;
           break;

@@ -7,4 +7,5 @@ export interface IUserRepository {
     variables: GetUserVariablesDto,
     token: string
   ): Promise<User | null>;
+  create(gqlQuery: any, variables: any, token: string): Promise<User>;
 }

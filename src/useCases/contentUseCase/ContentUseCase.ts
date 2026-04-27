@@ -8,14 +8,35 @@ import ErrorCode from "../../domain/enums/ErrorCodes";
 import { ErrorUseCase } from "../../domain/enums/ErrorUseCase";
 
 import { RedisService } from "../../infrastructure/services/redis/RedisService";
+import { S3Service } from "../../infrastructure/services/s3/S3Service";
 
 export class ContentUseCase {
   private contentEngine: IContentEngine;
   private redisService: RedisService;
+  private s3Service: S3Service;
 
-  constructor({ ContentEngine, RedisService }: { ContentEngine: IContentEngine; RedisService: RedisService }) {
+  constructor({ ContentEngine, RedisService, S3Service }: { 
+    ContentEngine: IContentEngine; 
+    RedisService: RedisService;
+    S3Service: S3Service;
+  }) {
     this.contentEngine = ContentEngine;
     this.redisService = RedisService;
+    this.s3Service = S3Service;
+  }
+
+  private async resolveFileUrls(contents: Content[]): Promise<Content[]> {
+    if (process.env.STORAGE_TYPE !== "s3") return contents;
+
+    return Promise.all(
+      contents.map(async (item) => {
+        if (item.fileUrl && !item.fileUrl.startsWith("http")) {
+          const signedUrl = await this.s3Service.getSignedFileUrl(item.fileUrl);
+          return { ...item, fileUrl: signedUrl };
+        }
+        return item;
+      })
+    );
   }
 
   async uploadContent(
@@ -31,19 +52,19 @@ export class ContentUseCase {
 
   async getContentList(
     userRole: string,
-    userId: number,
+    userId: string,
     gqlToken: string
   ): Promise<Content[]> {
     const queryVariables: GetContentVariablesDto =
       userRole === "principal" ? {} : { uploadedBy: userId };
 
     const result = await this.contentEngine.getContent(queryVariables, gqlToken);
-    return result.data;
+    return this.resolveFileUrls(result.data);
   }
 
   async approveContent(
     id: string,
-    approvedBy: number,
+    approvedBy: string,
     gqlToken: string
   ): Promise<Content> {
     const content = await this.contentEngine.approveContent(id, approvedBy, gqlToken);
@@ -62,7 +83,7 @@ export class ContentUseCase {
   }
 
   async getLiveContent(
-    teacherId: number,
+    teacherId: string,
     gqlToken: string,
     subject?: string
   ): Promise<Content[]> {
@@ -98,6 +119,8 @@ export class ContentUseCase {
     }
 
     if (result.data.length === 0) return [];
-    return this.contentEngine.resolveLiveContentRotation(result.data);
+    
+    const signedData = await this.resolveFileUrls(result.data);
+    return this.contentEngine.resolveLiveContentRotation(signedData);
   }
 }

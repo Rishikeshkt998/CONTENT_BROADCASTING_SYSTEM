@@ -1,7 +1,7 @@
 export const QUERY_GET_USER = `
   query GetUser(
     $email: String
-    $id: Int
+    $id: UUID
   ) {
     result: allUsers(
       filter: {
@@ -16,7 +16,6 @@ export const QUERY_GET_USER = `
         passwordHash
         role
         createdAt
-        updatedAt
       }
     }
   }

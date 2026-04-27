@@ -26,7 +26,7 @@ export class AuthUseCase {
       throw new ApiError("Invalid credentials", ErrorUseCase.AuthenticationError, ErrorCode.Unauthorized);
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
       throw new ApiError("Invalid credentials", ErrorUseCase.AuthenticationError, ErrorCode.Unauthorized);
     }
@@ -43,6 +43,34 @@ export class AuthUseCase {
         email: user.email,
         role: user.role,
       },
+    };
+  }
+
+  async register(
+    userData: { name: string; email: string; password: string; role: string },
+    gqlToken: string
+  ): Promise<Partial<User>> {
+    const existingUser = await this.authEngine.getUserByEmail(userData.email, gqlToken);
+    if (existingUser) {
+      throw new ApiError("User already exists", ErrorUseCase.AuthenticationError, ErrorCode.Conflict);
+    }
+
+    const passwordHash = await bcrypt.hash(userData.password, 10);
+    const user = await this.authEngine.registerUser(
+      {
+        name: userData.name,
+        email: userData.email,
+        passwordHash,
+        role: userData.role,
+      },
+      gqlToken
+    );
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     };
   }
 }

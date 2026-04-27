@@ -1,7 +1,7 @@
 export const QUERY_GET_CONTENT = `
   query GetContent(
     $id: UUID
-    $uploadedBy: Int
+    $uploadedBy: UUID
     $status: Int
     $subject: String
     $startTimeLte: Datetime
@@ -40,7 +40,6 @@ export const QUERY_GET_CONTENT = `
         approvedAt
         rejectionReason
         createdAt
-        updatedAt
         userByUploadedBy {
           id
           name
