@@ -11,27 +11,19 @@ export const createGraphqlServer = async (): Promise<Application> => {
 
   if (DB_URI) {
     const isLocal = DB_URI.includes("localhost") || DB_URI.includes("127.0.0.1");
-    const connectionString = isLocal || DB_URI.includes("ssl=") 
-      ? DB_URI 
-      : DB_URI.includes("?") ? `${DB_URI}&ssl=true` : `${DB_URI}?ssl=true`;
 
-    const graphql = postgraphile(connectionString, "public", {
+    const graphql = postgraphile(DB_URI, "public", {
       watchPg: isLocal,
       graphiql: true,
       enhanceGraphiql: true,
       appendPlugins: [ConnectionFilterPlugin as any, PgAggregatesPlugin as any],
       dynamicJson: true,
+      retryOnInitFail: true, // Prevents crash if DB is waking up
       graphileBuildOptions: {
         connectionFilterAllowNullInput: true,
         connectionFilterAllowEmptyObjectInput: true,
       },
       enableCors: true,
-      // Fix for Render SSL requirements
-      ...(isLocal ? {} : {
-        pgSettings: {
-          'ssl': 'true',
-        }
-      })
     });
     app.use(graphql);
   } else {
