@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Content Broadcasting System API",
+    "description": "API for managing and broadcasting educational content with RBAC and scheduling.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api-content-broadcasting-system.onrender.com",
+      "description": "Production Server"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "nonceAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-nonce"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "boolean", "example": false },
+          "msg": { "type": "string" },
+          "errorDetails": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "role"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" },
+                  "role": { "type": "string", "enum": ["teacher", "principal"] }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "summary": "Login and get JWT token",
+        "tags": ["Authentication"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      }
+    },
+    "/api/content": {
+      "get": {
+        "summary": "Get list of content (Teacher sees own, Principal sees all)",
+        "tags": ["Content"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Success" }
+        }
+      },
+      "post": {
+        "summary": "Upload new content (Teacher only)",
+        "tags": ["Content"],
+        "security": [{ "bearerAuth": [] }, { "nonceAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["title", "subject", "file"],
+                "properties": {
+                  "title": { "type": "string" },
+                  "subject": { "type": "string" },
+                  "description": { "type": "string" },
+                  "file": { "type": "string", "format": "binary" },
+                  "startTime": { "type": "string", "format": "date-time" },
+                  "endTime": { "type": "string", "format": "date-time" },
+                  "rotationDuration": { "type": "integer", "default": 5 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Content uploaded" }
+        }
+      }
+    },
+    "/api/content/{id}/approve": {
+      "patch": {
+        "summary": "Approve content (Principal only)",
+        "tags": ["Approval"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": { "description": "Content approved" }
+        }
+      }
+    },
+    "/api/content/{id}/reject": {
+      "patch": {
+        "summary": "Reject content (Principal only)",
+        "tags": ["Approval"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["reason"],
+                "properties": {
+                  "reason": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Content rejected" }
+        }
+      }
+    },
+    "/api/content/live/{teacherId}": {
+      "get": {
+        "summary": "Get live broadcasting content (Public)",
+        "tags": ["Broadcasting"],
+        "parameters": [
+          { "name": "teacherId", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } },
+          { "name": "subject", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Currently active content" }
+        }
+      }
+    }
+  }
+}
