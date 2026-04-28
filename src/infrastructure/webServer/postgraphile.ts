@@ -18,7 +18,9 @@ export const createGraphqlServer = async (): Promise<Application> => {
       enhanceGraphiql: true,
       appendPlugins: [ConnectionFilterPlugin as any, PgAggregatesPlugin as any],
       dynamicJson: true,
-      retryOnInitFail: true, // Prevents crash if DB is waking up
+      retryOnInitFail: true,
+      // For remote databases (like Render/DigitalOcean), we need to ensure SSL is handled
+      // PostGraphile can take a PG connection pool object for more control
       graphileBuildOptions: {
         connectionFilterAllowNullInput: true,
         connectionFilterAllowEmptyObjectInput: true,

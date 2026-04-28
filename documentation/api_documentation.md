@@ -16,10 +16,9 @@ To prevent replay attacks, certain endpoints (if enabled) require a unique nonce
   - Nonces are valid for **5 minutes** from the timestamp.
   - Each nonce can only be used **once** for the same request signature (method + path + query + body).
 - **Error Codes:**
-  - `4001 (MissingNonce)`
-  - `4002 (InvalidNonceFormat)`
-  - `4003 (NonceExpired)`
-  - `4004 (NonceAlreadyUsed)`
+  - `400 (MissingNonce / InvalidNonceFormat)`
+  - `401 (NonceExpired)`
+  - `403 (NonceAlreadyUsed)`
 
 ### 2. Rate Limiting
 Global rate limiting is applied to all endpoints to prevent abuse.

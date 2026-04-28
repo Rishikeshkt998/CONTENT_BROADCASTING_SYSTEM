@@ -57,6 +57,7 @@ export class ContentUseCase {
       );
     });
 
+
     try {
       return await this.contentEngine.createContent(variables, gqlToken);
     } catch (error) {

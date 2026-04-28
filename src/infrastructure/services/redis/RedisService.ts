@@ -58,11 +58,19 @@ export class RedisService {
   }
 
   async deleteKeys(keys: string[]): Promise<void> {
-    if (keys.length === 0) return;
+    if (!keys || keys.length === 0) return;
     await this.connect();
-    // Use a loop to handle the type mismatch where del expects a single string
-    for (const key of keys) {
-      await this.client.del(key);
+    
+    // Filter to ensure we only have valid, non-empty strings
+    const validKeys = keys.filter(k => typeof k === 'string' && k.length > 0);
+    if (validKeys.length === 0) return;
+
+    for (const key of validKeys) {
+      try {
+        await this.client.del(key);
+      } catch (err) {
+        logger.error(`[RedisService] Failed to delete key "${key}":`, err);
+      }
     }
   }
 }

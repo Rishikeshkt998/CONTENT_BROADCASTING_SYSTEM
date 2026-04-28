@@ -49,3 +49,54 @@
 2026-04-27 16:19:05 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
 2026-04-27 16:19:57 [info] [Server] ⚡️: Server is running on http://localhost:3000
 2026-04-27 16:19:57 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:35:25 [info] [Security] Nonce cleanup scheduled every 3600 seconds (60 minutes)
+2026-04-28 02:35:25 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:35:25 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:35:25 [info] Redis Client Connected
+2026-04-28 02:35:25 [error] Error cleaning up expired used nonces: ERR wrong number of arguments for 'del' command
+2026-04-28 02:37:25 [info] [Security] Nonce cleanup scheduled every 3600 seconds (60 minutes)
+2026-04-28 02:37:25 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:37:25 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:37:25 [info] Redis Client Connected
+2026-04-28 02:37:25 [error] Error cleaning up expired used nonces: ERR wrong number of arguments for 'del' command
+2026-04-28 02:38:43 [info] [Security] Nonce cleanup scheduled every 3600 seconds (60 minutes)
+2026-04-28 02:38:43 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:38:43 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:38:43 [info] Redis Client Connected
+2026-04-28 02:38:44 [info] [NonceCleanup] Cleaned up 1 nonces
+2026-04-28 02:40:43 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:40:43 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:40:51 [error] [NONCE_VALIDATION_ERROR] Missing nonce in request
+2026-04-28 02:41:33 [error] [NONCE_VALIDATION_ERROR] Missing nonce in request
+2026-04-28 02:42:35 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:42:35 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:42:44 [info] [S3Service] Successfully uploaded file: content/1777344163287-S3_Test_Image.png
+2026-04-28 02:42:44 [error] [GraphQL error]: Message: Cannot query field "contentSlots" on type "Query". Did you mean "contentSlot", "allContentSlots", "contentSlotById", "content", or "contentById"?, Location: [{"line":2,"column":3}], Path: undefined
+2026-04-28 02:42:44 [error] [Network error]: ServerError: Response not successful: Received status code 400
+2026-04-28 02:42:44 [error] [CONTENT_REPOSITORY_GET_SLOT_ERROR] ApolloError: Response not successful: Received status code 400
+2026-04-28 02:43:54 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:43:54 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:44:05 [info] [S3Service] Successfully uploaded file: content/1777344244439-S3_Test_Image.png
+2026-04-28 02:44:08 [error] [GraphQL error]: Message: Variable "$contentId" of type "UUID!" used in position expecting type "Int"., Location: [{"line":1,"column":32},{"line":3,"column":42}], Path: undefined
+2026-04-28 02:44:08 [error] [GraphQL error]: Message: Variable "$slotId" of type "UUID!" used in position expecting type "Int"., Location: [{"line":1,"column":51},{"line":3,"column":62}], Path: undefined
+2026-04-28 02:44:08 [error] [Network error]: ServerError: Response not successful: Received status code 400
+2026-04-28 02:44:09 [error] [CONTENT_REPOSITORY_CREATE_SCHEDULE_ERROR] ApolloError: Response not successful: Received status code 400
+2026-04-28 02:50:48 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:50:48 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:50:58 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:50:58 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:51:47 [info] [S3Service] Successfully uploaded file: content/1777344706591-S3_Test_Image.png
+2026-04-28 02:54:33 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 02:54:33 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 02:56:09 [error] [NONCE_VALIDATION_ERROR] Nonce has expired
+2026-04-28 03:00:25 [info] Redis Client Connected
+2026-04-28 03:00:26 [info] [S3Service] Successfully uploaded file: content/1777345225702-S3_Test_Image.png
+2026-04-28 03:00:42 [error] [NONCE_VALIDATION_ERROR] Missing nonce in request
+2026-04-28 03:02:12 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 03:02:12 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 03:02:19 [error] [NONCE_VALIDATION_ERROR] Missing nonce in request
+2026-04-28 03:08:08 [info] [Server] ⚡️: Server is running on http://localhost:3000
+2026-04-28 03:08:08 [info] [GRAPHQL] ⚡️: Postgraphile is running on http://localhost:4000/graphiql
+2026-04-28 03:09:01 [info] Redis Client Connected
+2026-04-28 03:09:03 [error] [GraphQL error]: Message: Variable "$uploadedBy" got invalid value ":a40f8ace-37ee-471c-ae36-196d3c44d3a7"; Expected type "UUID". Invalid UUID, expected 32 hexadecimal characters, optionally with hyphens, Location: [{"line":1,"column":29}], Path: undefined
+2026-04-28 03:09:03 [error] [CONTENT_REPOSITORY_LIST_ERROR] ApolloError: Variable "$uploadedBy" got invalid value ":a40f8ace-37ee-471c-ae36-196d3c44d3a7"; Expected type "UUID". Invalid UUID, expected 32 hexadecimal characters, optionally with hyphens

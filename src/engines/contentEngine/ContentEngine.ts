@@ -42,8 +42,8 @@ export default class ContentEngine implements IContentEngine {
     );
 
     let slotId;
-    if (slotResult.contentSlots.nodes.length > 0) {
-      slotId = slotResult.contentSlots.nodes[0].id;
+    if (slotResult.allContentSlots.nodes.length > 0) {
+      slotId = slotResult.allContentSlots.nodes[0].id;
     } else {
       const createSlotResult = await this.contentRepository.createSlot(
         MUTATION_CREATE_CONTENT_SLOT,

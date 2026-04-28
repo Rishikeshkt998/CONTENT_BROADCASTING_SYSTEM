@@ -70,9 +70,14 @@ const createServer = async (): Promise<Application> => {
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (err instanceof ApiError) {
       logger.error(`[${err.useCase}] ${err.message}`);
-      res.status(err.code || 500).json({
+      
+      // Safety check: Ensure status code is valid for Express (100-599)
+      const httpStatus = (err.code >= 100 && err.code < 600) ? err.code : 400;
+
+      res.status(httpStatus).json({
         status: false,
         msg: err.message,
+        errorCode: err.code,
         errorDetails: err.errorDetails,
         useCase: err.useCase
       });
