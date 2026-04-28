@@ -31,7 +31,8 @@
     "postgraphile": "^4.13.0",
     "postgraphile-plugin-connection-filter": "^2.3.0",
     "redis": "^5.12.1",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

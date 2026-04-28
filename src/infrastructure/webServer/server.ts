@@ -7,6 +7,7 @@ import authRoutes from "../routes/authRoutes";
 import contentRoutes from "../routes/contentRoutes";
 import { RateLimitingMiddleware } from "../middleware/RateLimit/RateLimitingMiddleware";
 import { NonceValidationMiddleware } from "../middleware/NonceValidation/NonceValidationMiddleware";
+import { isNonceExcluded, isRateLimitExcluded } from "../config/excludedPaths";
 import { ApiError } from "../../domain/errors/ApiError";
 
 const createServer = async (): Promise<Application> => {
@@ -18,11 +19,45 @@ const createServer = async (): Promise<Application> => {
   app.use(express.json({ limit: "100mb" }));
   app.use(express.urlencoded({ limit: "100mb", extended: false }));
 
-  // Global Rate Limiting
-  app.use(RateLimitingMiddleware.generalRateLimit);
+  if (process.env.ENABLE_SECURITY_MIDDLEWARES === "true") {
+    app.use("/api/", (req, res, next) => {
+      if (isRateLimitExcluded(req.path)) {
+        return next();
+      }
+      return RateLimitingMiddleware.generalRateLimit(req, res, next);
+    });
 
-  // Nonce Validation (Optional based on env)
-  app.use(NonceValidationMiddleware.validateNonce());
+    app.use("/api/", (req, res, next) => {
+      if (isNonceExcluded(req.path)) {
+        return next();
+      }
+      return NonceValidationMiddleware.validateNonce()(req, res, next);
+    });
+
+    // Schedule periodic cleanup of expired nonces
+    if (process.env.ENABLE_NONCE_CLEANUP === "true") {
+      const cleanupIntervalSeconds = parseInt(
+        process.env.NONCE_CLEANUP_INTERVAL || "3600"
+      );
+      const cleanupIntervalMs = cleanupIntervalSeconds * 1000;
+
+      logger.info(
+        `[Security] Nonce cleanup scheduled every ${cleanupIntervalSeconds} seconds (${cleanupIntervalSeconds / 60} minutes)`
+      );
+
+      // Run cleanup immediately on startup
+      NonceValidationMiddleware.cleanupExpiredNonces().catch((err) => {
+        logger.error("[Security] Initial nonce cleanup failed:", err);
+      });
+
+      // Schedule periodic cleanup
+      setInterval(() => {
+        NonceValidationMiddleware.cleanupExpiredNonces().catch((err) =>
+          logger.error("[Security] Scheduled nonce cleanup failed:", err)
+        );
+      }, cleanupIntervalMs);
+    }
+  }
 
   // Static files for uploads
   app.use('/uploads', express.static(path.join(__dirname, '../../../uploads')));
@@ -38,7 +73,7 @@ const createServer = async (): Promise<Application> => {
       res.status(err.code || 500).json({
         status: false,
         msg: err.message,
-        errorCode: err.errorCode,
+        errorDetails: err.errorDetails,
         useCase: err.useCase
       });
       return;

@@ -8,6 +8,9 @@ import { QUERY_GET_CONTENT } from "../../infrastructure/models/content/GET_CONTE
 import { MUTATION_CREATE_CONTENT } from "../../infrastructure/models/content/CREATE_CONTENT";
 import { MUTATION_APPROVE_CONTENT } from "../../infrastructure/models/content/APPROVE_CONTENT";
 import { MUTATION_REJECT_CONTENT } from "../../infrastructure/models/content/REJECT_CONTENT";
+import { MUTATION_CREATE_CONTENT_SLOT } from "../../infrastructure/models/content/CREATE_CONTENT_SLOT";
+import { QUERY_GET_CONTENT_SLOT_BY_SUBJECT } from "../../infrastructure/models/content/GET_CONTENT_SLOT_BY_SUBJECT";
+import { MUTATION_CREATE_CONTENT_SCHEDULE } from "../../infrastructure/models/content/CONTENT_SCHEDULE";
 
 type ContentEngineConstructorParams = {
   ContentRepository: IContentRepository;
@@ -31,11 +34,45 @@ export default class ContentEngine implements IContentEngine {
     variables: CreateContentVariablesDto,
     gqlToken: string
   ): Promise<Content> {
-    return this.contentRepository.create(
+    // 1. Get or Create Content Slot
+    const slotResult = await this.contentRepository.getSlotBySubject(
+      QUERY_GET_CONTENT_SLOT_BY_SUBJECT,
+      { subject: variables.subject },
+      gqlToken
+    );
+
+    let slotId;
+    if (slotResult.contentSlots.nodes.length > 0) {
+      slotId = slotResult.contentSlots.nodes[0].id;
+    } else {
+      const createSlotResult = await this.contentRepository.createSlot(
+        MUTATION_CREATE_CONTENT_SLOT,
+        { subject: variables.subject },
+        gqlToken
+      );
+      slotId = createSlotResult.result.contentSlot.id;
+    }
+
+    // 2. Create Content
+    const content = await this.contentRepository.create(
       MUTATION_CREATE_CONTENT,
       variables,
       gqlToken
     );
+
+    // 3. Create Content Schedule
+    await this.contentRepository.createSchedule(
+      MUTATION_CREATE_CONTENT_SCHEDULE,
+      {
+        contentId: content.id,
+        slotId: slotId,
+        rotationOrder: 0,
+        duration: variables.rotationDuration || 5,
+      },
+      gqlToken
+    );
+
+    return content;
   }
 
   async approveContent(

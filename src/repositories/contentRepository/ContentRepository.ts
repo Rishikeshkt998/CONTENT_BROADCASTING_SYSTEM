@@ -97,4 +97,68 @@ export default class ContentRepository implements IContentRepository {
       throw new Error("[CONTENT_REPOSITORY_REJECT_ERROR] " + error);
     }
   }
+  async createSlot(
+    gqlQuery: string,
+    variables: { subject: string },
+    token: string
+  ): Promise<any> {
+    try {
+      const client = apolloClient(token);
+      const result = await client.mutate({
+        mutation: gql`
+          ${gqlQuery}
+        `,
+        variables,
+      });
+      return result.data;
+    } catch (error) {
+      logger.error("[CONTENT_REPOSITORY_CREATE_SLOT_ERROR] " + error);
+      throw new Error("[CONTENT_REPOSITORY_CREATE_SLOT_ERROR] " + error);
+    }
+  }
+
+  async getSlotBySubject(
+    gqlQuery: string,
+    variables: { subject: string },
+    token: string
+  ): Promise<any> {
+    try {
+      const client = apolloClient(token);
+      const result = await client.query({
+        query: gql`
+          ${gqlQuery}
+        `,
+        variables,
+      });
+      return result.data;
+    } catch (error) {
+      logger.error("[CONTENT_REPOSITORY_GET_SLOT_ERROR] " + error);
+      throw new Error("[CONTENT_REPOSITORY_GET_SLOT_ERROR] " + error);
+    }
+  }
+
+  async createSchedule(
+    gqlQuery: string,
+    variables: {
+      contentId: string;
+      slotId: string;
+      rotationOrder: number;
+      duration: number;
+    },
+    token: string
+  ): Promise<any> {
+    try {
+      const client = apolloClient(token);
+      const result = await client.mutate({
+        mutation: gql`
+          ${gqlQuery}
+        `,
+        variables,
+      });
+      return result.data;
+    } catch (error) {
+      logger.error("[CONTENT_REPOSITORY_CREATE_SCHEDULE_ERROR] " + error);
+      throw new Error("[CONTENT_REPOSITORY_CREATE_SCHEDULE_ERROR] " + error);
+    }
+  }
 }

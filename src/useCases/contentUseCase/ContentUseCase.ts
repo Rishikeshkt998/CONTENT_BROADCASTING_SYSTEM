@@ -9,6 +9,8 @@ import { ErrorUseCase } from "../../domain/enums/ErrorUseCase";
 
 import { RedisService } from "../../infrastructure/services/redis/RedisService";
 import { S3Service } from "../../infrastructure/services/s3/S3Service";
+import { ContentUploadSchema } from "../../infrastructure/validation/content/ContentUploadSchema";
+import { ContentApprovalSchema, ContentRejectionSchema } from "../../infrastructure/validation/content/ContentActionSchema";
 
 export class ContentUseCase {
   private contentEngine: IContentEngine;
@@ -43,6 +45,18 @@ export class ContentUseCase {
     variables: CreateContentVariablesDto,
     gqlToken: string
   ): Promise<Content> {
+    await ContentUploadSchema.validate(variables, {
+      abortEarly: false,
+      strict: false, // Changed to false as some DTOs might have extra fields or need conversion
+    }).catch((error) => {
+      throw new ApiError(
+        "Invalid Payload",
+        ErrorUseCase.UploadError,
+        ErrorCode.PayloadError,
+        error.errors
+      );
+    });
+
     try {
       return await this.contentEngine.createContent(variables, gqlToken);
     } catch (error) {
@@ -67,6 +81,17 @@ export class ContentUseCase {
     approvedBy: string,
     gqlToken: string
   ): Promise<Content> {
+    await ContentApprovalSchema.validate({ id }, {
+      abortEarly: false,
+    }).catch((error) => {
+      throw new ApiError(
+        "Invalid Payload",
+        ErrorUseCase.DatabaseError,
+        ErrorCode.PayloadError,
+        error.errors
+      );
+    });
+
     const content = await this.contentEngine.approveContent(id, approvedBy, gqlToken);
     if (!content) throw new ApiError("Content not found", ErrorUseCase.DatabaseError, ErrorCode.NotFound);
     return content;
@@ -77,6 +102,17 @@ export class ContentUseCase {
     rejectionReason: string,
     gqlToken: string
   ): Promise<Content> {
+    await ContentRejectionSchema.validate({ id, reason: rejectionReason }, {
+      abortEarly: false,
+    }).catch((error) => {
+      throw new ApiError(
+        "Invalid Payload",
+        ErrorUseCase.DatabaseError,
+        ErrorCode.PayloadError,
+        error.errors
+      );
+    });
+
     const content = await this.contentEngine.rejectContent(id, rejectionReason, gqlToken);
     if (!content) throw new ApiError("Content not found", ErrorUseCase.DatabaseError, ErrorCode.NotFound);
     return content;

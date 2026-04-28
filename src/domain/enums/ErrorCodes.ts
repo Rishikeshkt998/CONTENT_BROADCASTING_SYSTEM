@@ -1,4 +1,5 @@
 enum ErrorCode {
+  PayloadError = 12,
   NotFound = 404,
   BadRequest = 400,
   Unauthorized = 401,

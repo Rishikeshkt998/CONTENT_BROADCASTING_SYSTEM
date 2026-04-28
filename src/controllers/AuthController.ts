@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import express, { Request, Response } from "express";
 import { AuthUseCase } from "../useCases/authUseCase/AuthUseCase";
 import { ApiError } from "../domain/errors/ApiError";
 
@@ -17,15 +17,9 @@ export default class AuthController {
     return req.headers.authorization || "";
   }
 
-  async login(req: Request, res: Response): Promise<void> {
+  async login(req: Request, res: Response, next: express.NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
-
-      if (!email || !password) {
-        res.status(400).json({ error: "Email and password are required" });
-        return;
-      }
-
       const gqlToken = this.getGqlToken(req);
       const result = await this.authUseCase.executeLogin(
         email,
@@ -33,30 +27,22 @@ export default class AuthController {
         gqlToken
       );
 
-      res.json({
+      res.status(200).json({
+        status: true,
         message: "Login successful",
-        token: result.token,
-        user: result.user,
+        data: {
+          token: result.token,
+          user: result.user,
+        }
       });
     } catch (error: any) {
-      if (error instanceof ApiError) {
-        res.status(error.code).json({ error: error.message });
-        return;
-      }
-      console.error("Login error:", error);
-      res.status(500).json({ error: "Internal server error" });
+      next(error);
     }
   }
 
-  async register(req: Request, res: Response): Promise<void> {
+  async register(req: Request, res: Response, next: express.NextFunction): Promise<void> {
     try {
       const { name, email, password, role } = req.body;
-
-      if (!name || !email || !password || !role) {
-        res.status(400).json({ error: "All fields are required" });
-        return;
-      }
-
       const gqlToken = this.getGqlToken(req);
       const user = await this.authUseCase.register(
         { name, email, password, role },
@@ -64,16 +50,14 @@ export default class AuthController {
       );
 
       res.status(201).json({
+        status: true,
         message: "User registered successfully",
-        user,
+        data: {
+          user,
+        }
       });
     } catch (error: any) {
-      if (error instanceof ApiError) {
-        res.status(error.code).json({ error: error.message });
-        return;
-      }
-      console.error("Registration error:", error);
-      res.status(500).json({ error: "Internal server error" });
+      next(error);
     }
   }
 }

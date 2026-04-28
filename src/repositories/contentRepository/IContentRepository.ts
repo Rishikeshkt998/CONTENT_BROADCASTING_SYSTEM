@@ -29,4 +29,27 @@ export interface IContentRepository {
     variables: RejectContentVariablesDto,
     token: string
   ): Promise<Content | null>;
+
+  createSlot(
+    gqlQuery: string,
+    variables: { subject: string },
+    token: string
+  ): Promise<any>;
+
+  getSlotBySubject(
+    gqlQuery: string,
+    variables: { subject: string },
+    token: string
+  ): Promise<any>;
+
+  createSchedule(
+    gqlQuery: string,
+    variables: {
+      contentId: string;
+      slotId: string;
+      rotationOrder: number;
+      duration: number;
+    },
+    token: string
+  ): Promise<any>;
 }

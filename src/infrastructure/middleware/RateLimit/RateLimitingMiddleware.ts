@@ -1,4 +1,3 @@
-
 import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 import { NextFunction, Request, Response } from "express";
 import crypto from "crypto";
@@ -27,7 +26,8 @@ export class RateLimitingMiddleware {
       .update(userAgent)
       .digest("hex")
       .slice(0, 10);
-    const requestSignature = RateLimitingMiddleware.generateRequestSignature(req);
+    const requestSignature =
+      RateLimitingMiddleware.generateRequestSignature(req);
 
     return `${ip}:${userAgentHash}:${requestSignature}`;
   };
@@ -47,9 +47,16 @@ export class RateLimitingMiddleware {
       15
     ),
     max: RateLimitingMiddleware.getMaxRequests("RATE_LIMIT_MAX_REQUESTS", 100),
+    message: {
+      status: false,
+      msg: "Too many requests",
+      errorMessage: "Too many requests. Please try again later.",
+    },
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: RateLimitingMiddleware.keyGenerator,
+    skipSuccessfulRequests: false,
+    skipFailedRequests: false,
     handler: (_req: Request, res: Response, next: NextFunction) => {
       if (!res.headersSent) {
         const error = new ApiError(
@@ -61,4 +68,52 @@ export class RateLimitingMiddleware {
       }
     },
   });
+
+  static createCustomRateLimit(options: {
+    windowMs?: number;
+    windowEnvVar?: string;
+    defaultWindowMinutes?: number;
+    max?: number;
+    maxEnvVar?: string;
+    defaultMax?: number;
+    message?: string;
+  }) {
+    let windowMs = options.windowMs;
+    let max = options.max;
+
+    if (options.windowEnvVar) {
+      windowMs = RateLimitingMiddleware.getWindowMs(
+        options.windowEnvVar,
+        options.defaultWindowMinutes || 15
+      );
+    }
+
+    if (options.maxEnvVar) {
+      max = RateLimitingMiddleware.getMaxRequests(
+        options.maxEnvVar,
+        options.defaultMax || 100
+      );
+    }
+
+    return rateLimit({
+      windowMs: windowMs || 15 * 60 * 1000,
+      max: max || 100,
+      message: {
+        status: false,
+        msg: "Too many requests",
+        errorMessage:
+          options.message || "Too many requests. Please try again later.",
+      },
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: RateLimitingMiddleware.keyGenerator,
+    });
+  }
+
+  static getConfiguration() {
+    return {
+      windowMinutes: parseInt(process.env.RATE_LIMIT_WINDOW_MINUTES || "15"),
+      maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "100"),
+    };
+  }
 }

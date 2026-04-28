@@ -5,6 +5,8 @@ import { User } from "../../domain/entities/User";
 import { ApiError } from "../../domain/errors/ApiError";
 import ErrorCode from "../../domain/enums/ErrorCodes";
 import { ErrorUseCase } from "../../domain/enums/ErrorUseCase";
+import LoginSchema from "../../infrastructure/validation/auth/LoginSchema";
+import RegisterSchema from "../../infrastructure/validation/auth/RegisterSchema";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
@@ -20,6 +22,18 @@ export class AuthUseCase {
     password: string,
     gqlToken: string
   ): Promise<{ token: string; user: Partial<User> }> {
+    await LoginSchema.validate({ email, password }, {
+      abortEarly: false,
+      strict: true,
+    }).catch((error) => {
+      throw new ApiError(
+        "Invalid Payload",
+        ErrorUseCase.AuthenticationError,
+        ErrorCode.PayloadError,
+        error.errors
+      );
+    });
+
     const user = await this.authEngine.getUserByEmail(email, gqlToken);
 
     if (!user) {
@@ -50,6 +64,18 @@ export class AuthUseCase {
     userData: { name: string; email: string; password: string; role: string },
     gqlToken: string
   ): Promise<Partial<User>> {
+    await RegisterSchema.validate(userData, {
+      abortEarly: false,
+      strict: true,
+    }).catch((error) => {
+      throw new ApiError(
+        "Invalid Payload",
+        ErrorUseCase.AuthenticationError,
+        ErrorCode.PayloadError,
+        error.errors
+      );
+    });
+
     const existingUser = await this.authEngine.getUserByEmail(userData.email, gqlToken);
     if (existingUser) {
       throw new ApiError("User already exists", ErrorUseCase.AuthenticationError, ErrorCode.Conflict);
